@@ -19,8 +19,13 @@ function getRangeRandom(start, end) {
 function get30DegRandom() {
    return (Math.random() > 0.5 ? '': '-') + Math.floor(Math.random() * 30)
 }
-let ImgFigure = React.createClass({
-  handleClick: function(e) {
+
+class ImgFigure extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
+  handleClick(e) {
     if (this.props.arrange.isCenter) {
       this.props.inverse();
     } else {
@@ -28,15 +33,15 @@ let ImgFigure = React.createClass({
     }
     e.stopPropagation();
     e.preventDefault();
-  },
-  render: function() {
+  }
+  render() {
     let styleObj = {};
     if (this.props.arrange.pos) {
       styleObj = this.props.arrange.pos;
     }
     if (this.props.arrange.rotate) {
-      (['-moz-','-ms-','-webkit-','']).forEach((value) => {
-        styleObj[value+'transform'] = `rotate(${this.props.arrange.rotate}deg)`;
+      (['Moz','Ms','Webkit','']).forEach((value) => {
+        styleObj[value+'Transform'] = `rotate(${this.props.arrange.rotate}deg)`;
       })
     }
     if (!this.props.arrange.isCenter) {
@@ -59,10 +64,45 @@ let ImgFigure = React.createClass({
       </figure>
     );
   }
-})
+}
 
+class ControllerUnit extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
 
-class AppComponent extends React.Component {
+  /*
+   *imgsFigue的点击处理函数
+   */
+  handleClick(e) {
+    //
+    if (this.props.arrange.isCenter) {
+      this.props.inverse()
+    } else {
+      this.props.center();
+    }
+    e.stopPropagation();
+    e.preventDefault();
+  }
+
+  render() {
+    let controllerUnitClassName = 'controller-unit';
+    //
+    if (this.props.arrange.isCenter) {
+      controllerUnitClassName += ' is-center ';
+      //
+      if (this.props.arrange.isInverse) {
+        controllerUnitClassName += 'is-inverse'
+      }
+    }
+    return (
+      <span className={ controllerUnitClassName } onClick={this.handleClick}></span>
+    )
+  }
+}
+
+class GalleryByReact extends React.Component {
   constructor(props) {
     super(props);
     this.Constant = {
@@ -229,12 +269,15 @@ class AppComponent extends React.Component {
           isCenter: false
         }
       }
-      imgFigures.push(<ImgFigure data={value}
+      imgFigures.push(<ImgFigure key={index} data={value}
         ref={'imgFigure' + index}
         arrange={this.state.imgsArrangeArr[index]}
         inverse={this.inverse(index)}
         center={this.center(index)}/>
-      )
+      );
+      controllerUnits.push(<ControllerUnit key={index} arrange={this.state.imgsArrangeArr[index]}
+        inverse={this.inverse(index)}
+        center={this.center(index)}/>);
     }.bind(this))
 
     return (
@@ -250,7 +293,7 @@ class AppComponent extends React.Component {
   }
 }
 
-AppComponent.defaultProps = {
+GalleryByReact.defaultProps = {
 };
 
-export default AppComponent;
+export default GalleryByReact;
